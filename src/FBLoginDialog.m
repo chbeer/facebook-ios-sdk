@@ -81,6 +81,7 @@
   }
 }
 
+#if TARGET_OS_IPHONE
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
   if (!(([error.domain isEqualToString:@"NSURLErrorDomain"] && error.code == -999) ||
         ([error.domain isEqualToString:@"WebKitErrorDomain"] && error.code == 102))) {
@@ -90,5 +91,37 @@
     }
   }
 }
+#else
+- (void)webView:(WebView *)sender didFailLoadWithError:(NSError *)error forFrame:(WebFrame *)frame
+{
+    NSLog(@"EntryController: Failed load: %@",error);
+    if( frame == [_webView mainFrame] ) {
+        if (!(([error.domain isEqualToString:@"NSURLErrorDomain"] && error.code == -999) ||
+              ([error.domain isEqualToString:@"WebKitErrorDomain"] && error.code == 102))) {
+            [super webView:sender didFailLoadWithError:error forFrame:frame];
+            
+            if ([_loginDelegate respondsToSelector:@selector(fbDialogNotLogin:)]) {
+                [_loginDelegate fbDialogNotLogin:NO];
+            }
+        }
+    }
+}
+// Also used to indicate that we've encountered an error during loading (so that we can update our 
+// progress indicator and status text field)
+- (void)webView:(WebView *)sender didFailProvisionalLoadWithError:(NSError *)error forFrame:(WebFrame *)frame
+{
+    NSLog(@"EntryController: Failed load: %@",error);
+    if( frame == [_webView mainFrame] ) {
+        if (!(([error.domain isEqualToString:@"NSURLErrorDomain"] && error.code == -999) ||
+              ([error.domain isEqualToString:@"WebKitErrorDomain"] && error.code == 102))) {
+            [super webView:sender didFailProvisionalLoadWithError:error forFrame:frame];
+            
+            if ([_loginDelegate respondsToSelector:@selector(fbDialogNotLogin:)]) {
+                [_loginDelegate fbDialogNotLogin:NO];
+            }
+        }
+    }
+}
+#endif
 
 @end

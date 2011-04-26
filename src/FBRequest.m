@@ -76,7 +76,11 @@ static const NSTimeInterval kTimeoutInterval = 180.0;
 
   NSMutableArray* pairs = [NSMutableArray array];
   for (NSString* key in [params keyEnumerator]) {
+#if TARGET_OS_IPHONE
     if (([[params valueForKey:key] isKindOfClass:[UIImage class]])
+#else
+    if (([[params valueForKey:key] isKindOfClass:[NSImage class]])
+#endif
         ||([[params valueForKey:key] isKindOfClass:[NSData class]])) {
       if ([httpMethod isEqualToString:@"GET"]) {
         NSLog(@"can not use GET to upload a file");
@@ -118,7 +122,12 @@ static const NSTimeInterval kTimeoutInterval = 180.0;
 
   for (id key in [_params keyEnumerator]) {
 
+#if TARGET_OS_IPHONE
     if (([[_params valueForKey:key] isKindOfClass:[UIImage class]])
+#else
+
+    if (([[_params valueForKey:key] isKindOfClass:[NSImage class]])
+#endif
       ||([[_params valueForKey:key] isKindOfClass:[NSData class]])) {
 
       [dataDictionary setObject:[_params valueForKey:key] forKey:key];
@@ -138,8 +147,14 @@ static const NSTimeInterval kTimeoutInterval = 180.0;
   if ([dataDictionary count] > 0) {
     for (id key in dataDictionary) {
       NSObject *dataParam = [dataDictionary valueForKey:key];
+#if TARGET_OS_IPHONE          
       if ([dataParam isKindOfClass:[UIImage class]]) {
         NSData* imageData = UIImagePNGRepresentation((UIImage*)dataParam);
+#else 
+        if ([dataParam isKindOfClass:[NSImage class]]) {
+#warning TODO: implement
+          NSData* imageData = nil; //UIImagePNGRepresentation((UIImage*)dataParam);
+#endif
         [self utfAppendBody:body
                        data:[NSString stringWithFormat:
                              @"Content-Disposition: form-data; filename=\"%@\"\r\n", key]];

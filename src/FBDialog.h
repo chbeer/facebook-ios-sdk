@@ -15,7 +15,12 @@
 */
 
 #import <Foundation/Foundation.h>
+#if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
+#else
+#import <AppKit/AppKit.h>
+#import <WebKit/WebKit.h>
+#endif
 
 @protocol FBDialogDelegate;
 
@@ -25,6 +30,20 @@
  * Facebook dialog interface for start the facebook webView UIServer Dialog.
  */
 
+#if TARGET_OS_MAC
+@interface FBDialog : NSWindowController {
+    id<FBDialogDelegate> _delegate;
+    NSMutableDictionary *_params;
+    NSString * _serverURL;
+    NSURL* _loadingURL;
+    
+    IBOutlet WebView * _webView;
+    IBOutlet NSProgressIndicator* _spinner;
+    IBOutlet NSImageView* _iconView;
+    IBOutlet NSTextField* _titleLabel;
+    IBOutlet NSButton* _closeButton;
+}
+#else
 @interface FBDialog : UIView <UIWebViewDelegate> {
   id<FBDialogDelegate> _delegate;
   NSMutableDictionary *_params;
@@ -41,6 +60,7 @@
   // Ensures that UI elements behind the dialog are disabled.
   UIView* _modalBackgroundView;
 }
+#endif
 
 /**
  * The delegate.
@@ -116,6 +136,14 @@
  * Implementations must call dismissWithSuccess:YES at some point to hide the dialog.
  */
 - (void)dialogDidCancel:(NSURL *)url;
+
+
+/** Close action for Interface Builder:
+ */
+#if TARGET_OS_MAC
+- (IBAction) cancel:(id)sender;
+#endif
+
 @end
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

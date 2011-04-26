@@ -285,7 +285,7 @@ BOOL FBIsDeviceIPad() {
   }
 }
 
-- (void)cancel {
+- (void)cancel:(id)sender {
   [self dialogDidCancel:nil];
 }
 
@@ -315,7 +315,7 @@ BOOL FBIsDeviceIPad() {
     [_closeButton setImage:closeImage forState:UIControlStateNormal];
     [_closeButton setTitleColor:color forState:UIControlStateNormal];
     [_closeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
-    [_closeButton addTarget:self action:@selector(cancel)
+    [_closeButton addTarget:self action:@selector(cancel:)
       forControlEvents:UIControlEventTouchUpInside];
 
     // To be compatible with OS 2.x
