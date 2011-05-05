@@ -191,7 +191,7 @@ static CGFloat kBorderWidth = 10;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // UIView
-
+/*
 - (void)drawRect:(NSRect)rect {
   NSRect grayRect = NSOffsetRect(rect, -0.5, -0.5);
   [self drawRect:grayRect fill:kBorderGray radius:10];
@@ -206,63 +206,11 @@ static CGFloat kBorderWidth = 10;
     ceil(rect.origin.x + kBorderWidth), headerRect.origin.y + headerRect.size.height,
     rect.size.width - kBorderWidth*2, _webView.frame.size.height+1);
   [self strokeLines:webRect stroke:kBorderBlack];
-}
+}*/
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// UIWebViewDelegate
-/*
-- (BOOL)webView:(WebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
-    navigationType:(UIWebViewNavigationType)navigationType {
-  NSURL* url = request.URL;
+// WebViewDelegate
 
-  if ([url.scheme isEqualToString:@"fbconnect"]) {
-    if ([[url.resourceSpecifier substringToIndex:8] isEqualToString:@"//cancel"]) {
-      NSString * errorCode = [self getStringFromUrl:[url absoluteString] needle:@"error_code="];
-      NSString * errorStr = [self getStringFromUrl:[url absoluteString] needle:@"error_msg="];
-      if (errorCode) {
-        NSDictionary * errorData = [NSDictionary dictionaryWithObject:errorStr forKey:@"error_msg"];
-        NSError * error = [NSError errorWithDomain:@"facebookErrDomain"
-                                              code:[errorCode intValue]
-                                          userInfo:errorData];
-        [self dismissWithError:error animated:YES];
-      } else {
-        [self dialogDidCancel:url];
-      }
-    } else {
-      [self dialogDidSucceed:url];
-    }
-    return NO;
-  } else if ([_loadingURL isEqual:url]) {
-    return YES;
-  } else if (navigationType == UIWebViewNavigationTypeLinkClicked) {
-    if ([_delegate respondsToSelector:@selector(dialog:shouldOpenURLInExternalBrowser:)]) {
-      if (![_delegate dialog:self shouldOpenURLInExternalBrowser:url]) {
-        return NO;
-      }
-    }
-
-    [[UIApplication sharedApplication] openURL:request.URL];
-    return NO;
-  } else {
-    return YES;
-  }
-}
-
-- (void)webViewDidFinishLoad:(UIWebView *)webView {
-  [_spinner stopAnimating];
-  _spinner.hidden = YES;
-
-  self.title = [_webView stringByEvaluatingJavaScriptFromString:@"document.title"];
-  [self updateWebOrientation];
-}
-
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
-  // 102 == WebKitErrorFrameLoadInterruptedByPolicyChange
-  if (!([error.domain isEqualToString:@"WebKitErrorDomain"] && error.code == 102)) {
-    [self dismissWithError:error animated:YES];
-  }
-}
-*/
 
 // Used to indicate that we've started loading (so that we can update our progress indicator
 // and status text field)
@@ -335,24 +283,19 @@ static CGFloat kBorderWidth = 10;
         } else {
             [self dialogDidSucceed:url];
         }
-//        return NO;
         [listener ignore];
     } else if ([_loadingURL isEqual:url]) {
-        //        return YES;
         [listener use];
     } else if (navigationType == WebNavigationTypeLinkClicked) {
         if ([_delegate respondsToSelector:@selector(dialog:shouldOpenURLInExternalBrowser:)]) {
             if (![_delegate dialog:self shouldOpenURLInExternalBrowser:url]) {
-//                return NO;
                 [listener ignore];
             }
         }
         
         [NSApp openURL:request.URL];
-//        return NO;
         [listener ignore];
     } else {
-//        return YES;
         [listener use];
     }
 }
@@ -414,8 +357,9 @@ static CGFloat kBorderWidth = 10;
 
 - (void)show {
   [self load];
-/*  [_spinner startAnimating];
-  _spinner.center = _webView.center;*/
+
+  [_spinner startAnimation:self];
+//  _spinner.center = _webView.center;
 
 /*  UIWindow* window = [UIApplication sharedApplication].keyWindow;
   if (!window) {
