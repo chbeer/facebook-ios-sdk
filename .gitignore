@@ -12,3 +12,6 @@ test/UnitTest/UnitTest.xcodeproj/*.mode*
 test/UnitTest/build/
 *~
 *#
+*.perspectivev3
+*.xcworkspace
+xcuserdata
