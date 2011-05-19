@@ -150,11 +150,18 @@ static NSString* kSDKVersion = @"2";
   // If single sign-on failed, open an inline login dialog. This will require the user to
   // enter his or her credentials.
   if (!didOpenOtherApp) {
-    [_loginDialog release];
-    _loginDialog = [[FBLoginDialog alloc] initWithURL:loginDialogURL
-                                          loginParams:params
-                                             delegate:self];
-    [_loginDialog show];
+      
+      if ([_sessionDelegate respondsToSelector:@selector(showLoginDialogWithURL:loginParams:delegate:)]) {
+          [_sessionDelegate showLoginDialogWithURL:loginDialogURL 
+                                       loginParams:params
+                                          delegate:self];
+      } else {
+          [_loginDialog release];
+          _loginDialog = [[FBLoginDialog alloc] initWithURL:loginDialogURL
+                                                loginParams:params
+                                                   delegate:self];
+          [_loginDialog show];
+      }      
   }
 }
 
